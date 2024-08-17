@@ -5,6 +5,7 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
@@ -74,9 +75,11 @@ func (g *Game) Update() error {
 	}
 	boardCursor := g.getBoardCursorPosition()
 
+	pressed := ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) && inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft)
+
 	if err := g.board.Update(&CursorInput{
 		Position: boardCursor,
-		Pressed:  ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft),
+		Pressed:  pressed,
 	}, g.turn()); err != nil {
 		return err
 	}
