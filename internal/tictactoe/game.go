@@ -2,17 +2,12 @@ package tictactoe
 
 import (
 	"fmt"
+	"game-tictactoe/internal/utils"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
-)
-
-const (
-	Title        = "Tic Tac Toe"
-	ScreenWidth  = 600
-	ScreenHeight = 600
 )
 
 type Position struct {
@@ -54,10 +49,6 @@ func NewGame() (*Game, error) {
 	}
 
 	return game, nil
-}
-
-func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return ScreenWidth, ScreenHeight
 }
 
 func (g *Game) Update() error {
@@ -115,15 +106,17 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	// Print result
 	if g.over {
-
 		result := ""
 		if g.winner != "" {
-			result = fmt.Sprintf("%s won. Press Space to restart.", g.winner)
+			result = fmt.Sprintf("%s won.\n\nPress Space to restart.", g.winner)
 		} else if g.over {
 			result = "Draw. Press Space to restart."
 		}
 
-		drawResult(screen, result)
+		darkOverlay := ebiten.NewImage(screen.Bounds().Dx(), screen.Bounds().Dy())
+		darkOverlay.Fill(color.RGBA{0, 0, 0, 128})
+		screen.DrawImage(darkOverlay, nil)
+		utils.DrawTextWithShadow(screen, result, 300, 300, 3, color.White, text.AlignCenter, text.AlignCenter)
 	}
 }
 
@@ -208,16 +201,4 @@ func (g *Game) restart() error {
 	g.winner = ""
 	g.over = false
 	return nil
-}
-
-func drawResult(screen *ebiten.Image, result string) {
-	textOp := &text.DrawOptions{}
-	textOp.GeoM.Translate(ScreenWidth/2, 60)
-	textOp.ColorScale.ScaleWithColor(color.Black)
-	textOp.PrimaryAlign = text.AlignCenter
-	textOp.SecondaryAlign = text.AlignCenter
-	text.Draw(screen, result, &text.GoTextFace{
-		Source: mplusFaceSource,
-		Size:   36,
-	}, textOp)
 }

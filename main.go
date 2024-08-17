@@ -3,19 +3,15 @@ package main
 import (
 	"log"
 
-	"game-tictactoe/internal/tictactoe"
+	"game-tictactoe/internal/game"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 func main() {
-	game, err := tictactoe.NewGame()
-	if err != nil {
-		log.Fatal(err)
-	}
-	ebiten.SetWindowSize(tictactoe.ScreenWidth, tictactoe.ScreenHeight)
-	ebiten.SetWindowTitle(tictactoe.Title)
-	if err := ebiten.RunGame(game); err != nil {
+	ebiten.SetWindowSize(game.ScreenWidth, game.ScreenHeight)
+	ebiten.SetWindowTitle(game.Title)
+	if err := ebiten.RunGame(game.NewGame()); err != nil {
 		log.Fatal(err)
 	}
 }

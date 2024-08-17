@@ -5,6 +5,7 @@ go 1.22.6
 require (
 	github.com/hajimehoshi/ebiten v1.12.12
 	github.com/hajimehoshi/ebiten/v2 v2.7.8
+	github.com/mbrc12/prestige v0.0.0-20240531193834-b278557c7ffb
 )
 
 require (
