@@ -21,6 +21,8 @@ var (
 	tileImage       = ebiten.NewImage(tileSize, tileSize)
 	xColor          = color.NRGBA{0xff, 0x00, 0x00, 0xff}
 	xHoverColor     = color.NRGBA{0xff, 0xcc, 0xcc, 0xff}
+	oColor          = color.NRGBA{0x00, 0x00, 0xff, 0xff}
+	oHoverColor     = color.NRGBA{0xcc, 0xcc, 0xff, 0xff}
 	mplusFaceSource *text.GoTextFaceSource
 )
 
@@ -42,6 +44,7 @@ type Tile struct {
 type TileInput struct {
 	Hovered bool
 	Pressed bool
+	Turn    string // "X" or "O"
 }
 
 func (t *Tile) Update(input TileInput) error {
@@ -55,15 +58,15 @@ func (t *Tile) Update(input TileInput) error {
 		return nil
 	}
 	if input.Pressed {
-		t.Value = "X"
+		t.Value = input.Turn
 	}
 
 	return nil
 }
 
-func (t *Tile) Draw(boardImage *ebiten.Image, position Position) {
+func (t *Tile) Draw(boardImage *ebiten.Image, position Position, turn string) {
 	t.drawTileBackground(boardImage, position)
-	t.drawValue(boardImage, position)
+	t.drawValue(boardImage, position, turn)
 }
 
 func (t *Tile) drawTileBackground(boardImage *ebiten.Image, position Position) {
@@ -79,17 +82,27 @@ func (t *Tile) drawTileBackground(boardImage *ebiten.Image, position Position) {
 	boardImage.DrawImage(tileImage, op)
 }
 
-func (t *Tile) drawValue(boardImage *ebiten.Image, position Position) {
+func (t *Tile) drawValue(boardImage *ebiten.Image, position Position, turn string) {
 	if t.Value == "" && !t.Hovered {
 		return
 	}
 
 	str := t.Value
-	color := xColor
-	if t.Hovered {
-		str = "X"
-		if t.Value == "" {
+	if str == "" {
+		str = turn
+	}
+	var color color.Color
+	if str == "X" {
+		if t.Hovered && t.Value == "" {
 			color = xHoverColor
+		} else {
+			color = xColor
+		}
+	} else {
+		if t.Hovered && t.Value == "" {
+			color = oHoverColor
+		} else {
+			color = oColor
 		}
 	}
 

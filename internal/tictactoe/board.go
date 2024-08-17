@@ -38,13 +38,14 @@ type CursorInput struct {
 	Pressed  bool
 }
 
-func (b *Board) Update(cursorInput *CursorInput) error {
+func (b *Board) Update(cursorInput *CursorInput, turn string) error {
 	for i, row := range b.Tiles {
 		for j, tile := range row {
 			hovered := isTileHovered(cursorInput.Position, i, j)
 			input := TileInput{
 				Hovered: hovered,
 				Pressed: false,
+				Turn:    turn,
 			}
 			if hovered && cursorInput.Pressed {
 				input.Pressed = true
@@ -60,7 +61,7 @@ func (b *Board) Update(cursorInput *CursorInput) error {
 }
 
 // Draw draws the board to the given boardImage.
-func (b *Board) Draw(boardImage *ebiten.Image) {
+func (b *Board) Draw(boardImage *ebiten.Image, turn string) {
 	boardImage.Fill(frameColor)
 
 	// Draw tiles
@@ -68,7 +69,7 @@ func (b *Board) Draw(boardImage *ebiten.Image) {
 		for j, tile := range row {
 			x := j*tileSize + (j+1)*tileMargin
 			y := i*tileSize + (i+1)*tileMargin
-			tile.Draw(boardImage, Position{x: x, y: y})
+			tile.Draw(boardImage, Position{x: x, y: y}, turn)
 		}
 	}
 }

@@ -67,7 +67,7 @@ func (g *Game) Update() error {
 	if err := g.board.Update(&CursorInput{
 		Position: boardCursor,
 		Pressed:  ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft),
-	}); err != nil {
+	}, g.turn()); err != nil {
 		return err
 	}
 
@@ -82,7 +82,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(backgroundColor)
 
 	// Board draws to g.boardImage
-	g.board.Draw(g.boardImage)
+	g.board.Draw(g.boardImage, g.turn())
 
 	// Draw g.boardImage to screen
 	op := &ebiten.DrawImageOptions{}
@@ -115,4 +115,21 @@ func (g *Game) getBoardCursorPosition() Position {
 		return Position{x: -1, y: -1}
 	}
 	return Position{x: g.cursor.x - g.boardLocation.x, y: g.cursor.y - g.boardLocation.y}
+}
+
+func (g *Game) turn() string {
+	filledTiles := 0
+	for _, row := range g.board.Tiles {
+		for _, tile := range row {
+			if tile.Value != "" {
+				filledTiles++
+			}
+		}
+	}
+
+	if filledTiles%2 == 0 {
+		return "X"
+	} else {
+		return "O"
+	}
 }
