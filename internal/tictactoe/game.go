@@ -33,6 +33,8 @@ type Game struct {
 	boardImage    *ebiten.Image
 	boardLocation *Location
 	cursor        *Position
+	winner        string
+	over          bool
 }
 
 func NewGame() (*Game, error) {
@@ -57,6 +59,10 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 }
 
 func (g *Game) Update() error {
+	if g.over {
+		return nil
+	}
+
 	mx, my := ebiten.CursorPosition()
 	g.cursor = &Position{
 		x: mx,
@@ -70,6 +76,9 @@ func (g *Game) Update() error {
 	}, g.turn()); err != nil {
 		return err
 	}
+
+	g.winner = g.checkWinner()
+	g.over = g.checkOver()
 
 	return nil
 }
@@ -97,12 +106,15 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	op.GeoM.Translate(float64(x), float64(y))
 	screen.DrawImage(g.boardImage, op)
 
-	in := false
-	if g.cursor.x >= x && g.cursor.x <= x+bw && g.cursor.y >= y && g.cursor.y <= y+bh {
-		in = true
+	// Print result
+	result := ""
+	if g.winner != "" {
+		result = fmt.Sprintf("%s won", g.winner)
+	} else if g.over {
+		result = "Draw"
 	}
 
-	msg := fmt.Sprintf("(%d, %d)\n(%d, %d)\n(%d, %d)\n%t", g.cursor.x, g.cursor.y, x, y, bw, bh, in)
+	msg := fmt.Sprintf("Result: %s\n", result)
 	ebitenutil.DebugPrint(screen, msg)
 }
 
@@ -132,4 +144,48 @@ func (g *Game) turn() string {
 	} else {
 		return "O"
 	}
+}
+
+func (g *Game) checkWinner() string {
+	// Check rows
+	for _, row := range g.board.Tiles {
+		if row[0].Value != "" && row[0].Value == row[1].Value && row[1].Value == row[2].Value {
+			return row[0].Value
+		}
+	}
+
+	// Check columns
+	for col := 0; col < 3; col++ {
+		if g.board.Tiles[0][col].Value != "" && g.board.Tiles[0][col].Value == g.board.Tiles[1][col].Value && g.board.Tiles[1][col].Value == g.board.Tiles[2][col].Value {
+			return g.board.Tiles[0][col].Value
+		}
+	}
+
+	// Check diagonals
+	if g.board.Tiles[0][0].Value != "" && g.board.Tiles[0][0].Value == g.board.Tiles[1][1].Value && g.board.Tiles[1][1].Value == g.board.Tiles[2][2].Value {
+		return g.board.Tiles[0][0].Value
+	}
+	if g.board.Tiles[0][2].Value != "" && g.board.Tiles[0][2].Value == g.board.Tiles[1][1].Value && g.board.Tiles[1][1].Value == g.board.Tiles[2][0].Value {
+		return g.board.Tiles[0][2].Value
+	}
+
+	// No winner
+	return ""
+}
+
+func (g *Game) checkOver() bool {
+	if g.winner != "" {
+		return true
+	}
+
+	filledTiles := 0
+	for _, row := range g.board.Tiles {
+		for _, tile := range row {
+			if tile.Value != "" {
+				filledTiles++
+			}
+		}
+	}
+
+	return filledTiles == 9
 }
