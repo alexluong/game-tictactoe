@@ -42,5 +42,5 @@ func (scene *TicTacToeScene) ExitEnd(state *State) {
 }
 
 func (scene *TicTacToeScene) Layout(state *State, w, h int) (int, int) {
-	return w, h
+	return ScreenWidth, ScreenHeight
 }

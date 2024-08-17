@@ -48,5 +48,5 @@ func (scene *TitleScene) ExitEnd(state *State) {
 }
 
 func (scene *TitleScene) Layout(state *State, w, h int) (int, int) {
-	return w, h
+	return ScreenWidth, ScreenHeight
 }

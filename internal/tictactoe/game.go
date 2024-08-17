@@ -110,7 +110,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		if g.winner != "" {
 			result = fmt.Sprintf("%s won.\n\nPress Space to restart.", g.winner)
 		} else if g.over {
-			result = "Draw. Press Space to restart."
+			result = "Draw.\n\nPress Space to restart."
 		}
 
 		darkOverlay := ebiten.NewImage(screen.Bounds().Dx(), screen.Bounds().Dy())
