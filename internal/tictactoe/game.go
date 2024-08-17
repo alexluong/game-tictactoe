@@ -60,6 +60,9 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func (g *Game) Update() error {
 	if g.over {
+		if ebiten.IsKeyPressed(ebiten.KeySpace) {
+			return g.restart()
+		}
 		return nil
 	}
 
@@ -109,9 +112,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Print result
 	result := ""
 	if g.winner != "" {
-		result = fmt.Sprintf("%s won", g.winner)
+		result = fmt.Sprintf("%s won. Press Space to restart.", g.winner)
 	} else if g.over {
-		result = "Draw"
+		result = "Draw. Press Space to restart."
 	}
 
 	msg := fmt.Sprintf("Result: %s\n", result)
@@ -188,4 +191,15 @@ func (g *Game) checkOver() bool {
 	}
 
 	return filledTiles == 9
+}
+
+func (g *Game) restart() error {
+	board, err := NewBoard()
+	if err != nil {
+		return err
+	}
+	g.board = board
+	g.winner = ""
+	g.over = false
+	return nil
 }
