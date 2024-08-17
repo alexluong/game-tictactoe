@@ -2,9 +2,10 @@ package tictactoe
 
 import (
 	"fmt"
+	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 const (
@@ -110,15 +111,17 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(g.boardImage, op)
 
 	// Print result
-	result := ""
-	if g.winner != "" {
-		result = fmt.Sprintf("%s won. Press Space to restart.", g.winner)
-	} else if g.over {
-		result = "Draw. Press Space to restart."
-	}
+	if g.over {
 
-	msg := fmt.Sprintf("Result: %s\n", result)
-	ebitenutil.DebugPrint(screen, msg)
+		result := ""
+		if g.winner != "" {
+			result = fmt.Sprintf("%s won. Press Space to restart.", g.winner)
+		} else if g.over {
+			result = "Draw. Press Space to restart."
+		}
+
+		drawResult(screen, result)
+	}
 }
 
 func (g *Game) isCursorInBoard() bool {
@@ -202,4 +205,16 @@ func (g *Game) restart() error {
 	g.winner = ""
 	g.over = false
 	return nil
+}
+
+func drawResult(screen *ebiten.Image, result string) {
+	textOp := &text.DrawOptions{}
+	textOp.GeoM.Translate(ScreenWidth/2, 60)
+	textOp.ColorScale.ScaleWithColor(color.Black)
+	textOp.PrimaryAlign = text.AlignCenter
+	textOp.SecondaryAlign = text.AlignCenter
+	text.Draw(screen, result, &text.GoTextFace{
+		Source: mplusFaceSource,
+		Size:   36,
+	}, textOp)
 }
